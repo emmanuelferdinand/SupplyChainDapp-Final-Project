@@ -1,5 +1,6 @@
 Install NVM(Node Version Manager)
-Run
+Install Solidity
+In VSCode Run
 npm install -g truffle
 npm install -g ganache
 ganache --port 7545
