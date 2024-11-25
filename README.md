@@ -9,3 +9,5 @@ on a another terminal run
 truffle compile
 truffle migrate --network development
 truffle test --network development
+
+run in terminal using directory ./client
