@@ -11,3 +11,4 @@ truffle migrate --network development
 truffle test --network development
 
 run in terminal using directory ./client
+in SupplyChainContract, connect with your wallet address (metamask preferred)
