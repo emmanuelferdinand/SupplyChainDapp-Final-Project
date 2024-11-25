@@ -1,0 +1,39 @@
+.home {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(to right, #0a74da, #0f52ba);
+    color: white;
+    height: 100vh;
+}
+
+.hero-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.cta-buttons button {
+    background-color: #ffd700;
+    color: #0a74da;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.cta-buttons button:hover {
+    background-color: #ffc107;
+}

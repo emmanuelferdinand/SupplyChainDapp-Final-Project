@@ -1,0 +1,64 @@
+.header {
+    background-color: #0a74da;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    font-size: 1rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #ffd700; /* Gold hover effect */
+}
+
+.navbar {
+    padding: 0.5rem 1rem;
+}
+
+.header-logo {
+    font-weight: bold;
+    font-size: 24px;
+    margin-right: 20px;
+}
+
+.nav-link {
+    color: white;
+    font-size: 18px;
+    margin-right: 15px; /* Adds margin between Home and Product */
+}
+
+#user-dropdown .dropdown-menu {
+    right: 100px;
+    left: auto; /* Align the dropdown menu to the right */
+}
