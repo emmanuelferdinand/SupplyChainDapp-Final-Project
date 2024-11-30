@@ -20,6 +20,7 @@ contract SupplyChain {
     event LogSold(uint256 id);
     event LogShipped(uint256 id);
     event LogReceived(uint256 id);
+    event LogItemRemoved(uint256 id);
 
     modifier onlySeller(uint256 _id) {
         require(msg.sender == items[_id].seller, "Not authorized: Only seller");
@@ -57,6 +58,12 @@ contract SupplyChain {
         require(success, "Transfer to seller failed");
 
         emit LogSold(_id);
+    }
+
+    function removeItem(uint256 _id) public {
+        require(items[_id].id != 0, "Item does not exist");
+        delete items[_id];
+        emit LogItemRemoved(_id);
     }
 
     function shipItem(uint256 _id) public onlySeller(_id) {

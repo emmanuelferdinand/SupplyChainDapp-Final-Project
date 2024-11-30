@@ -64,3 +64,19 @@
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.7);
 }
+
+.remove-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: white;
+    background-color: #ff4d4d; /* Red color for remove button */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.remove-button:hover {
+    background-color: #ff0000; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge */
+}

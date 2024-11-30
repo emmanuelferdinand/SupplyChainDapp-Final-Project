@@ -7,21 +7,47 @@ import "./Product.css"; // Import custom CSS for styling
 const Product = () => {
     const [items, setItems] = useState([]);
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const itemCount = await SupplyChainContract.methods.itemCounter().call();
-                const itemsArray = [];
-                for (let i = 1; i <= itemCount; i++) {
-                    const item = await SupplyChainContract.methods.items(i).call();
+    const fetchItems = async () => {
+        try {
+            const itemCount = await SupplyChainContract.methods.itemCounter().call();
+            const itemsArray = [];
+            for (let i = 1; i <= itemCount; i++) {
+                const item = await SupplyChainContract.methods.items(i).call();
+                // Exclude deleted items and items without valid name or price
+                if (item.id !== "0" && item.name.trim() && item.price !== "0") {
                     itemsArray.push(item);
                 }
-                setItems(itemsArray);
-            } catch (err) {
-                console.error("Error fetching items:", err);
             }
-        };
+            setItems(itemsArray);
+        } catch (err) {
+            console.error("Error fetching items:", err);
+        }
+    };
 
+    const handleRemove = async (id) => {
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await SupplyChainContract.methods.removeItem(id).send({ from: accounts[0] });
+            alert("Product removed successfully!");
+
+            // Refresh the product list after removal
+            const itemCount = await SupplyChainContract.methods.itemCounter().call();
+            const updatedItems = [];
+            for (let i = 1; i <= itemCount; i++) {
+                const item = await SupplyChainContract.methods.items(i).call();
+                // Exclude deleted items and items without valid name or price
+                if (item.id !== "0" && item.name.trim() && item.price !== "0") {
+                    updatedItems.push(item);
+                }
+            }
+            setItems(updatedItems);
+        } catch (err) {
+            console.error("Error removing item:", err);
+            alert("Failed to remove product.");
+        }
+    };
+
+    useEffect(() => {
         fetchItems();
     }, []);
 
@@ -51,6 +77,12 @@ const Product = () => {
                                 <div className="product-details">
                                     <p><strong>Name:</strong> {productName}</p>
                                     <p><strong>Price:</strong> {web3.utils.fromWei(item.price, "ether")} Ether</p>
+                                    <button
+                                        className="remove-button"
+                                        onClick={() => handleRemove(item.id)}
+                                    >
+                                        Remove
+                                    </button>
                                 </div>
                             </div>
                         );
