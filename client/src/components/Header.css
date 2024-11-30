@@ -1,0 +1,59 @@
+/* Navbar styling */
+.navbar {
+    background-color: #0a74da; /* Blue background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Add padding */
+    display: flex;
+    justify-content: space-between; /* Space between left and right sections */
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+    position: sticky; /* Make it stick to the top */
+    top: 0;
+    z-index: 1000;
+}
+
+/* Left side: Brand title */
+.nav-left {
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.brand-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+}
+
+/* Right side: Navigation links */
+.nav-container {
+    display: flex;
+    gap: 20px; /* Add space between links */
+}
+
+/* Styling for individual nav links */
+.nav-link {
+    text-decoration: none; /* Remove underline */
+    color: white; /* White text */
+    font-size: 1.2rem; /* Increase font size */
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease; /* Add hover effects */
+}
+
+/* Hover effect for links */
+.nav-link:hover {
+    color: #ffcc00; /* Highlight link on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+    .navbar {
+        flex-direction: column; /* Stack the sections vertically */
+        align-items: center; /* Center align everything */
+    }
+
+    .nav-container {
+        flex-direction: column; /* Stack links vertically */
+        gap: 10px;
+    }
+}
