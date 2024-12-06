@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 import SupplyChainContract from "../../SupplyChainContract";
 import web3 from "../../web3";
-import "./AddProduct.css"; // Import the custom CSS
+import "./AddProduct.css";
 
 const AddProduct = () => {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
+    const [quantity, setQuantity] = useState("");
     const [image, setImage] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const combinedName = image ? `${name} ${image}` : name; // Combine name and image
-            console.log("Submitting:", { combinedName, price });
-
+            const combinedName = image ? `${name} ${image}` : name;
             const accounts = await web3.eth.getAccounts();
             await SupplyChainContract.methods
-                .addItem(combinedName, web3.utils.toWei(price, "ether"))
+                .addItem(combinedName, web3.utils.toWei(price, "ether"), parseInt(quantity))
                 .send({ from: accounts[0] });
 
             alert("Product added successfully!");
             setName("");
             setPrice("");
+            setQuantity("");
             setImage("");
         } catch (err) {
             console.error("Error adding product:", err);
@@ -46,6 +46,14 @@ const AddProduct = () => {
                     placeholder="Price in Ether"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
+                    required
+                    className="input-field"
+                />
+                <input
+                    type="number"
+                    placeholder="Quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
                     required
                     className="input-field"
                 />

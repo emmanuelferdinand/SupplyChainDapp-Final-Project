@@ -8,6 +8,7 @@ contract SupplyChain {
         uint256 id;
         string name;
         uint256 price;
+        uint256 quantity; // Added quantity field
         State state;
         address payable seller;
         address payable buyer;
@@ -32,12 +33,14 @@ contract SupplyChain {
         _;
     }
 
-    function addItem(string memory _name, uint256 _price) public {
+    function addItem(string memory _name, uint256 _price, uint256 _quantity) public {
+        require(_quantity > 0, "Quantity must be greater than zero");
         itemCounter++;
         items[itemCounter] = Item({
             id: itemCounter,
             name: _name,
             price: _price,
+            quantity: _quantity,
             state: State.ForSale,
             seller: payable(msg.sender),
             buyer: payable(address(0))
@@ -45,16 +48,21 @@ contract SupplyChain {
         emit LogForSale(itemCounter);
     }
 
-    function buyItem(uint256 _id) public payable {
+    function buyItem(uint256 _id, uint256 _quantity) public payable {
         Item storage item = items[_id];
         require(item.state == State.ForSale, "Item not for sale");
-        require(msg.value >= item.price, "Insufficient payment");
+        require(item.quantity >= _quantity, "Not enough quantity available");
+        require(msg.value >= item.price * _quantity, "Insufficient payment");
 
-        item.buyer = payable(msg.sender);
-        item.state = State.Sold;
+        item.quantity -= _quantity;
+
+        // If all items are sold, update the state to Sold
+        if (item.quantity == 0) {
+            item.state = State.Sold;
+        }
 
         // Transfer funds to the seller
-        (bool success, ) = item.seller.call{value: item.price}("");
+        (bool success, ) = item.seller.call{value: item.price * _quantity}("");
         require(success, "Transfer to seller failed");
 
         emit LogSold(_id);

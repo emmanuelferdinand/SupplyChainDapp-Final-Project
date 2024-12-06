@@ -7,7 +7,7 @@
     background-color: #0a74da; /* Static background color for the Product page */
 }
 
-/* Other styles for the page */
+/* Title styling */
 .product-title {
     font-size: 2.5rem;
     margin-bottom: 20px;
@@ -15,6 +15,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Add Product Button */
 .add-product-button {
     padding: 10px 20px;
     font-size: 1.2rem;
@@ -32,12 +33,14 @@
     transform: scale(1.1);
 }
 
+/* Product Grid */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
 }
 
+/* Product Card */
 .product-card {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -60,11 +63,16 @@
     margin-bottom: 10px;
 }
 
+.product-details {
+    text-align: center;
+}
+
 .no-products {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* Remove Button */
 .remove-button {
     padding: 8px 12px;
     border: none;
@@ -79,4 +87,51 @@
 .remove-button:hover {
     background-color: #ff0000; /* Darker red on hover */
     transform: scale(1.05); /* Slightly enlarge */
+}
+
+/* Add Product Form Container */
+.add-product-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+/* Add Product Form */
+.add-product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Field */
+.input-field {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+}
+
+/* Submit Button */
+.submit-button {
+    padding: 10px;
+    font-size: 1rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05);
 }

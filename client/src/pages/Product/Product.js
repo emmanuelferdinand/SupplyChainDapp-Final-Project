@@ -13,14 +13,36 @@ const Product = () => {
             const itemsArray = [];
             for (let i = 1; i <= itemCount; i++) {
                 const item = await SupplyChainContract.methods.items(i).call();
-                // Exclude deleted items and items without valid name or price
-                if (item.id !== "0" && item.name.trim() && item.price !== "0") {
+                console.log("Fetched Item:", item); // Log each item here
+                // Exclude deleted items and items without valid name, price, or quantity
+                if (item.id !== "0" && item.name.trim() && item.price !== "0" && item.quantity > 0) {
                     itemsArray.push(item);
                 }
             }
             setItems(itemsArray);
         } catch (err) {
             console.error("Error fetching items:", err);
+        }
+    };
+
+    const handleBuy = async (id, price, quantity) => {
+        const buyQuantity = prompt("Enter the quantity you want to buy:");
+        if (!buyQuantity || buyQuantity <= 0 || buyQuantity > quantity) {
+            alert("Invalid quantity entered!");
+            return;
+        }
+    
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await SupplyChainContract.methods
+                .buyItem(id, buyQuantity)
+                .send({ from: accounts[0], value: web3.utils.toWei((price * buyQuantity).toString(), "ether") });
+            alert("Purchase successful!");
+    
+            fetchItems(); // Refresh product list after purchase
+        } catch (err) {
+            console.error("Error buying item:", err);
+            alert("Failed to buy product.");
         }
     };
 
@@ -35,8 +57,8 @@ const Product = () => {
             const updatedItems = [];
             for (let i = 1; i <= itemCount; i++) {
                 const item = await SupplyChainContract.methods.items(i).call();
-                // Exclude deleted items and items without valid name or price
-                if (item.id !== "0" && item.name.trim() && item.price !== "0") {
+                // Exclude deleted items and items without valid name, price, or quantity
+                if (item.id !== "0" && item.name.trim() && item.price !== "0" && item.quantity > 0) {
                     updatedItems.push(item);
                 }
             }
@@ -77,6 +99,7 @@ const Product = () => {
                                 <div className="product-details">
                                     <p><strong>Name:</strong> {productName}</p>
                                     <p><strong>Price:</strong> {web3.utils.fromWei(item.price, "ether")} Ether</p>
+                                    <p><strong>Quantity:</strong> {item.quantity.toString()}</p>
                                     <button
                                         className="remove-button"
                                         onClick={() => handleRemove(item.id)}
