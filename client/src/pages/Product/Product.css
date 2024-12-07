@@ -135,3 +135,18 @@
     background: #0056b3; /* Darker blue on hover */
     transform: scale(1.05);
 }
+
+.buy-button {
+    padding: 8px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.buy-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
