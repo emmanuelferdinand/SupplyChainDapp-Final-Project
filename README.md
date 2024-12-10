@@ -12,3 +12,8 @@ truffle test --network development
 
 run in terminal using directory ./client
 in SupplyChainContract, connect with your wallet address (metamask preferred)
+go back to where you run ganache, scroll up until you find "Contract created:". Paste it to "const contractAddress" in SupplyChainContract.js
+in ./client use npm start to start webapp
+don't forget to connect metamask to app
+
+P.S. client/src/link also has SupplyChain.json, don't forget to update.

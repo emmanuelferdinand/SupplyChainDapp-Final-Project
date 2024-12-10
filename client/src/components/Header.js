@@ -1,45 +1,37 @@
-import React from "react";
-import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import SupplyChainContract from "../SupplyChainContract";
+import web3 from "../web3";
+import "./Header.css"; // Import the CSS file for styling
 
-const Header = ({ account }) => {
+const Header = () => {
+    const [role, setRole] = useState("");
+
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                const accounts = await web3.eth.getAccounts();
+                const userRole = await SupplyChainContract.methods.roles(accounts[0]).call();
+                setRole(userRole);
+            } catch (err) {
+                console.error("Error fetching role:", err);
+            }
+        };
+        fetchRole();
+    }, []);
+
     return (
-        <Navbar bg="primary" variant="dark" expand="lg">
-            <Container fluid>
-                {/* Logo */}
-                <Navbar.Brand className="header-logo">
-                    SupplyChain DApp
-                </Navbar.Brand>
-
-                {/* Links next to the logo */}
-                <Nav className="me-auto">
-                    <Link to="/" className="nav-link">Home</Link>
-                    <Link to="/product" className="nav-link">Product</Link>
-                </Nav>
-
-                {/* User dropdown on the far-right */}
-                <Nav className="ms-auto">
-                    <NavDropdown
-                        title={<i className="bi bi-person-circle" style={{ fontSize: "1.5rem" }}></i>} // Person icon
-                        id="user-dropdown"
-                        align="end"
-                    >
-                        {account ? (
-                            <>
-                                <NavDropdown.Item>
-                                    Connected: {account.substring(0, 6)}...{account.slice(-4)}
-                                </NavDropdown.Item>
-                                <NavDropdown.Divider />
-                            </>
-                        ) : (
-                            <NavDropdown.Item>Not Connected</NavDropdown.Item>
-                        )}
-                        <NavDropdown.Item as={Link} to="/auth">Sign in</NavDropdown.Item>
-                        <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
-                    </NavDropdown>
-                </Nav>
-            </Container>
-        </Navbar>
+        <header className="navbar">
+            <div className="nav-left">
+                <h1 className="brand-title">Supply Chain DApp</h1>
+            </div>
+            <nav className="nav-container">
+                <Link to="/" className="nav-link">Home</Link>
+                <Link to="/product" className="nav-link">Products</Link>
+                <Link to="/add-product" className="nav-link">Add Product</Link>
+                <Link to="/auth" className="nav-link">Sign In</Link>
+            </nav>
+        </header>
     );
 };
 

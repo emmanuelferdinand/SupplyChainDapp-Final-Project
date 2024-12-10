@@ -1,0 +1,99 @@
+/* Background styling */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #0a74da; /* Add !important to override other styles */
+    color: rgb(255, 255, 255);
+    height: 100vh; /* Ensure it spans the full height of the viewport */
+    width: 100vw; /* Ensure it spans the full width of the viewport */
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Center the form container */
+.add-product-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #0a74da;
+}
+
+/* Title styling */
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Form styling */
+.add-product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    animation: slideUp 1s ease-in-out;
+}
+
+/* Input field styling */
+.input-field {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+    background: rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s ease;
+}
+
+.input-field:focus {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Submit button styling */
+.submit-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    color: #0a74da;
+    background-color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.4);
+}
+
+.submit-button:hover {
+    background-color: #ffcc00;
+    transform: scale(1.1);
+    box-shadow: 0px 6px 15px rgba(255, 255, 255, 0.7);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
