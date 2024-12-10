@@ -45,7 +45,13 @@ const AddProduct = () => {
                     type="number"
                     placeholder="Price in Ether"
                     value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    onChange={(e) => {
+                        const value = parseFloat(e.target.value); // Convert the input value to a number
+                        if (value >= 0 || e.target.value === '') {
+                        setPrice(e.target.value); // Allow positive numbers and an empty string
+                        }
+                    }}
+                    min='0'
                     required
                     className="input-field"
                 />
@@ -53,7 +59,13 @@ const AddProduct = () => {
                     type="number"
                     placeholder="Quantity"
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    onChange={(e) => { 
+                        const value = parseFloat(e.target.value); // Convert the input value to a number
+                        if (value >= 0 || e.target.value === '') {
+                        setQuantity(e.target.value)
+                        }
+                    }}
+                    min='0'
                     required
                     className="input-field"
                 />
