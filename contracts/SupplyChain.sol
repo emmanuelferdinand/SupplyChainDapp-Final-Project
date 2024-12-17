@@ -3,37 +3,46 @@ pragma solidity ^0.8.21;
 
 contract SupplyChain {
     enum State { Created, ForSale, Sold, Shipped, Received }
+    enum Role { None, Buyer, Seller } // Roles: None, Buyer, Seller
 
     struct Item {
         uint256 id;
         string name;
         uint256 price;
-        uint256 quantity; // Added quantity field
+        uint256 quantity;
         State state;
         address payable seller;
         address payable buyer;
     }
 
     mapping(uint256 => Item) public items;
+    mapping(address => Role) public roles; // Map accounts to roles
     uint256 public itemCounter;
 
     event LogForSale(uint256 id);
     event LogSold(uint256 id);
-    event LogShipped(uint256 id);
-    event LogReceived(uint256 id);
     event LogItemRemoved(uint256 id);
 
-    modifier onlySeller(uint256 _id) {
-        require(msg.sender == items[_id].seller, "Not authorized: Only seller");
+    modifier onlySeller() {
+        require(roles[msg.sender] == Role.Seller, "Not authorized: Must be seller");
         _;
     }
 
-    modifier onlyBuyer(uint256 _id) {
-        require(msg.sender == items[_id].buyer, "Not authorized: Only buyer");
+    modifier onlyBuyer() {
+        require(roles[msg.sender] == Role.Buyer, "Not authorized: Must be buyer");
         _;
     }
 
-    function addItem(string memory _name, uint256 _price, uint256 _quantity) public {
+    modifier onlySellerOfItem(uint256 _id) {
+        require(items[_id].seller == msg.sender, "Not authorized: Not the item's seller");
+        _;
+    }
+
+    function setRole(Role _role) public {
+        roles[msg.sender] = _role;
+    }
+
+    function addItem(string memory _name, uint256 _price, uint256 _quantity) public onlySeller {
         require(_quantity > 0, "Quantity must be greater than zero");
         itemCounter++;
         items[itemCounter] = Item({
@@ -48,7 +57,7 @@ contract SupplyChain {
         emit LogForSale(itemCounter);
     }
 
-    function buyItem(uint256 _id, uint256 _quantity) public payable {
+    function buyItem(uint256 _id, uint256 _quantity) public payable onlyBuyer {
         Item storage item = items[_id];
         require(item.state == State.ForSale, "Item not for sale");
         require(item.quantity >= _quantity, "Not enough quantity available");
@@ -56,35 +65,19 @@ contract SupplyChain {
 
         item.quantity -= _quantity;
 
-        // If all items are sold, update the state to Sold
         if (item.quantity == 0) {
             item.state = State.Sold;
         }
 
-        // Transfer funds to the seller
+        item.buyer = payable(msg.sender);
         (bool success, ) = item.seller.call{value: item.price * _quantity}("");
         require(success, "Transfer to seller failed");
 
         emit LogSold(_id);
     }
 
-    function removeItem(uint256 _id) public {
-        require(items[_id].id != 0, "Item does not exist");
+    function removeItem(uint256 _id) public onlySellerOfItem(_id) {
         delete items[_id];
         emit LogItemRemoved(_id);
-    }
-
-    function shipItem(uint256 _id) public onlySeller(_id) {
-        Item storage item = items[_id];
-        require(item.state == State.Sold, "Item not sold yet");
-        item.state = State.Shipped;
-        emit LogShipped(_id);
-    }
-
-    function receiveItem(uint256 _id) public onlyBuyer(_id) {
-        Item storage item = items[_id];
-        require(item.state == State.Shipped, "Item not shipped yet");
-        item.state = State.Received;
-        emit LogReceived(_id);
     }
 }
