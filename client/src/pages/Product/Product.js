@@ -4,22 +4,31 @@ import SupplyChainContract from "../../SupplyChainContract";
 import web3 from "../../web3";
 import "./Product.css"; // Import custom CSS for styling
 
-const Product = () => {
+const Product = ({ role }) => {
     const [items, setItems] = useState([]);
+    const [account, setAccount] = useState(""); // Current user account
+    const [filterMyProducts, setFilterMyProducts] = useState(false); // Filter for seller's products
+    const [searchSeller, setSearchSeller] = useState(""); // Filter by seller's address
+    const [searchProduct, setProduct] = useState("") //Filter by product
 
+    // Fetch the user's account
+    const fetchAccount = async () => {
+        try {
+            const accounts = await web3.eth.getAccounts();
+            setAccount(accounts[0]);
+        } catch (err) {
+            console.error("Error fetching account:", err);
+        }
+    };
+
+    // Fetch items from the contract
     const fetchItems = async () => {
         try {
             const itemCount = await SupplyChainContract.methods.itemCounter().call();
             const itemsArray = [];
             for (let i = 1; i <= itemCount; i++) {
                 const item = await SupplyChainContract.methods.items(i).call();
-                console.log("Fetched Item:", {
-                    ...item,
-                    quantity: item.quantity.toString(), // Convert BigInt to string for logging
-                    price: web3.utils.fromWei(item.price, "ether"),
-                });
-                // Exclude deleted items and items without valid name, price, or quantity
-                if (item.id !== "0" && item.name.trim() && item.price !== "0" && item.quantity > 0) {
+                if (item.id !== "0" && item.quantity > 0) {
                     itemsArray.push(item);
                 }
             }
@@ -29,75 +38,117 @@ const Product = () => {
         }
     };
 
+    // Handle buying a product
     const handleBuy = async (id, price, quantity) => {
         const buyQuantity = prompt("Enter the quantity you want to buy:");
         if (!buyQuantity || buyQuantity <= 0 || buyQuantity > quantity) {
             alert("Invalid quantity entered!");
             return;
         }
-    
+
         try {
             const accounts = await web3.eth.getAccounts();
             const totalCost = web3.utils.toWei(
                 (Number(price) * Number(buyQuantity)).toString(),
                 "ether"
             );
-    
-            // Make the transaction
-            await SupplyChainContract.methods
-                .buyItem(id, buyQuantity)
-                .send({ from: accounts[0], value: totalCost });
-    
-            // Add to cart
-            const newItem = {
-                id: id.toString(), // Convert BigInt to string
-                name: `Item ${id}`,
-                price: price.toString(), // Convert BigInt to string
-                quantity: buyQuantity.toString(), // Convert BigInt to string
-            };
-            const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-            storedCart.push(newItem);
-            localStorage.setItem("cart", JSON.stringify(storedCart));
-    
+
+            await SupplyChainContract.methods.buyItem(id, buyQuantity).send({
+                from: accounts[0],
+                value: totalCost,
+            });
+
             alert("Purchase successful!");
             fetchItems(); // Refresh product list after purchase
         } catch (err) {
             console.error("Error buying item:", err);
             alert("Failed to buy product.");
         }
-    };    
+    };
 
+    // Handle removing a product
     const handleRemove = async (id) => {
         try {
-            const accounts = await web3.eth.getAccounts();
-            await SupplyChainContract.methods.removeItem(id).send({ from: accounts[0] });
+            await SupplyChainContract.methods.removeItem(id).send({ from: account });
             alert("Product removed successfully!");
-
-            // Refresh the product list after removal
-            fetchItems();
+            fetchItems(); // Refresh the product list after removal
         } catch (err) {
             console.error("Error removing item:", err);
             alert("Failed to remove product.");
         }
     };
 
+    // Fetch account and items on component mount
     useEffect(() => {
+        fetchAccount();
         fetchItems();
     }, []);
+
+    // Filter items based on role and criteria
+    const filteredItems = items.filter((item) => {
+        if (filterMyProducts && item.seller.toLowerCase() !== account.toLowerCase()) {
+            return false;
+        }
+        if (searchSeller && item.seller.toLowerCase() !== searchSeller.toLowerCase()) {
+            return false;
+        }  
+        if (searchProduct && !item.name.toLowerCase().includes(searchProduct.toLowerCase())){
+            return false;
+        }
+        return true;
+    });
+
 
     return (
         <div className="product-page">
             <h1 className="product-title">Products</h1>
-            <Link to="/add-product">
-                <button className="add-product-button">Add Product</button>
-            </Link>
+            <div className="filter-container">
+                {role === "Seller" && (
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={filterMyProducts}
+                            onChange={() => setFilterMyProducts(!filterMyProducts)}
+                        />
+                        Show My Products Only
+                    </label>
+                )}
+            </div>
+            <div>
+                <label>
+                    Filter by Seller Address:
+                    <input
+                        type="text"
+                        value={searchSeller}
+                        onChange={(e) => setSearchSeller(e.target.value)}
+                        placeholder="Enter seller address"
+                    />
+                </label>
+            </div>
+            <div className="filter-container">
+                <label>
+                    Filter by Product Name:
+                    <input
+                        type="text"
+                        value={searchProduct}
+                        onChange={(e) => setProduct(e.target.value)}
+                        placeholder="Enter product name"
+                    />
+                </label>
+            </div>
+            {role === "Seller" && (
+                <Link to="/add-product">
+                    <button className="add-product-button">Add Product</button>
+                </Link>
+            )}
             <div className="product-grid">
-                {items.length > 0 ? (
-                    items.map((item, index) => {
-                        // Split name and image URL intelligently
+                {filteredItems.length > 0 ? (
+                    filteredItems.map((item, index) => {
                         const imageIndex = item.name.lastIndexOf("https://");
-                        const productName = imageIndex !== -1 ? item.name.substring(0, imageIndex).trim() : item.name.trim();
-                        const imageUrl = imageIndex !== -1 ? item.name.substring(imageIndex).trim() : null;
+                        const productName =
+                            imageIndex !== -1 ? item.name.substring(0, imageIndex).trim() : item.name.trim();
+                        const imageUrl =
+                            imageIndex !== -1 ? item.name.substring(imageIndex).trim() : null;
 
                         return (
                             <div className="product-card" key={index}>
@@ -118,24 +169,31 @@ const Product = () => {
                                     <p>
                                         <strong>Quantity:</strong> {item.quantity.toString()}
                                     </p>
-                                    <button
-                                        className="buy-button"
-                                        onClick={() =>
-                                            handleBuy(
-                                                item.id,
-                                                web3.utils.fromWei(item.price, "ether"),
-                                                item.quantity
-                                            )
-                                        }
-                                    >
-                                        Buy
-                                    </button>
-                                    <button
-                                        className="remove-button"
-                                        onClick={() => handleRemove(item.id)}
-                                    >
-                                        Remove
-                                    </button>
+                                    <p>
+                                        <strong>Seller:</strong> {item.seller}
+                                    </p>
+                                    {role === "Buyer" && (
+                                        <button
+                                            className="buy-button"
+                                            onClick={() =>
+                                                handleBuy(
+                                                    item.id,
+                                                    web3.utils.fromWei(item.price, "ether"),
+                                                    item.quantity
+                                                )
+                                            }
+                                        >
+                                            Buy
+                                        </button>
+                                    )}
+                                    {role === "Seller" && item.seller.toLowerCase() === account.toLowerCase() && (
+                                        <button
+                                            className="remove-button"
+                                            onClick={() => handleRemove(item.id)}
+                                        >
+                                            Remove
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );
