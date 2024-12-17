@@ -58,3 +58,31 @@
         gap: 10px;
     }
 }
+
+
+.nav-container {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.role-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.account-display {
+    font-size: 12px;
+    color: lightgray;
+}
