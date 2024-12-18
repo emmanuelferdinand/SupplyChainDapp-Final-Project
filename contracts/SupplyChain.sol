@@ -42,7 +42,7 @@ contract SupplyChain {
         roles[msg.sender] = _role;
     }
 
-    function addItem(string memory _name, uint256 _price, uint256 _quantity) public onlySeller {
+    function addItem(string memory _name, uint256 _price, uint256 _quantity) public {
         require(_quantity > 0, "Quantity must be greater than zero");
         itemCounter++;
         items[itemCounter] = Item({
@@ -57,7 +57,7 @@ contract SupplyChain {
         emit LogForSale(itemCounter);
     }
 
-    function buyItem(uint256 _id, uint256 _quantity) public payable onlyBuyer {
+    function buyItem(uint256 _id, uint256 _quantity) public payable {
         Item storage item = items[_id];
         require(item.state == State.ForSale, "Item not for sale");
         require(item.quantity >= _quantity, "Not enough quantity available");
