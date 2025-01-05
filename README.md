@@ -3,16 +3,17 @@ Install Solidity
 In VSCode Run
 npm install -g truffle
 npm install -g ganache
-ganache --port 7545
 
-on a another terminal run
+Setup:
+ganache --port 7545
+on a another terminal run:
 truffle compile
 truffle migrate --network development
-truffle test --network development
-
+scroll up until you find "Deployed Contract Address". Paste it to "const contractAddress" in SupplyChainContract.js
+This one just for testing, no need for setup. "truffle test --network development"
 run in terminal using directory ./client
 in SupplyChainContract, connect with your wallet address (metamask preferred)
-go back to where you run ganache, scroll up until you find "Contract created:". Paste it to "const contractAddress" in SupplyChainContract.js
+
 in ./client use npm start to start webapp
 don't forget to connect metamask to app
 

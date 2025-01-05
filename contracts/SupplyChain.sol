@@ -19,17 +19,14 @@ contract SupplyChain {
     mapping(address => Role) public roles; // Map accounts to roles
     uint256 public itemCounter;
 
+    // Declare events
     event LogForSale(uint256 id);
     event LogSold(uint256 id);
     event LogItemRemoved(uint256 id);
+    event LogRoleAssigned(address indexed account, Role role); // New event
 
     modifier onlySeller() {
         require(roles[msg.sender] == Role.Seller, "Not authorized: Must be seller");
-        _;
-    }
-
-    modifier onlyBuyer() {
-        require(roles[msg.sender] == Role.Buyer, "Not authorized: Must be buyer");
         _;
     }
 
@@ -38,8 +35,12 @@ contract SupplyChain {
         _;
     }
 
-    function setRole(Role _role) public {
-        roles[msg.sender] = _role;
+    function setRole(address account, uint8 role) public {
+        require(account != address(0), "Invalid account address");
+        require(role <= uint8(Role.Seller), "Invalid role value");
+        
+        roles[account] = Role(role);
+        emit LogRoleAssigned(account, Role(role));
     }
 
     function addItem(string memory _name, uint256 _price, uint256 _quantity) public onlySeller {
@@ -57,7 +58,7 @@ contract SupplyChain {
         emit LogForSale(itemCounter);
     }
 
-    function buyItem(uint256 _id, uint256 _quantity) public payable onlyBuyer {
+    function buyItem(uint256 _id, uint256 _quantity) public payable {
         Item storage item = items[_id];
         require(item.state == State.ForSale, "Item not for sale");
         require(item.quantity >= _quantity, "Not enough quantity available");

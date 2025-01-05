@@ -1,7 +1,7 @@
 import web3 from "./web3";
 import SupplyChain from "./link/SupplyChain.json";
 
-const contractAddress = "0xc0d76484c48ec9e0591e44098da265bea9173832"; // Replace with your contract address
+const contractAddress = "0x9c98122E11A6aBc7420167Fb5F4cd55CaC7AD533"; // Replace with your contract address
 
 let contract;
 try {
